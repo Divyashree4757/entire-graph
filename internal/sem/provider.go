@@ -3523,7 +3523,7 @@ func resolveJuliaSameContainerMethodCallTargets(name string, from SymbolRecord, 
 	if localBindings == nil {
 		return nil, false, false
 	}
-	parameters := symbolFlowParameterNames(from)
+	parameters := symbolFlowParameterNames(from, false)
 	if !from.parameterNamesKnown {
 		// A short-form signature includes its RHS; stop at the first balanced
 		// argument list so calls on the RHS are not mistaken for parameters.
@@ -5682,7 +5682,7 @@ func forEachRelation(ctx context.Context, repoKey string, files []FileRecord, re
 				// paid for. Revisit if a corpus shows it is not rare.
 				edgeOrder := []string{}
 				flowsByEdge := map[string]*RelationRecord{}
-				for _, flow := range returnFlowCalls(body, symbolFlowParameterNames(from)) {
+				for _, flow := range returnFlowCalls(body, symbolFlowParameterNames(from, false)) {
 					if flow.Name == from.Name {
 						continue
 					}
