@@ -1,0 +1,18 @@
+Build the demo case. Create two small branches off `entire-interference` that are
+structurally incompatible but that Git reports as cleanly mergeable:
+
+- Branch `pr-a`: change the SIGNATURE of one existing Go function — add a parameter
+  or change its return type. One function, one file, nothing else.
+- Branch `pr-b`: in a DIFFERENT file, add a new function that CALLS that same
+  function using its OLD signature. Nothing else.
+
+Pick a function that already has callers so the graph has real edges to traverse.
+
+Then:
+1. Prove Git sees no conflict — git merge --no-commit --no-ff each branch, then abort.
+2. Run: cd interference && python pr_interference.py --repo .. \
+        --base entire-interference --pr-a pr-a --pr-b pr-b
+3. Show me the output.
+
+Expected: a small number of overlaps, the changed function flagged HIGH with
+contract_changed=true and low_precision=false, recommendation SERIALIZE_MERGE_ORDER.
