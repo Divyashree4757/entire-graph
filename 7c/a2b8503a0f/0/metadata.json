@@ -28,6 +28,65 @@
   "session_metrics": {
     "turn_count": 5
   },
+  "summary": {
+    "intent": "Reconstruct project context from an Entire Checkpoint, run Entire Graph impact analysis on the interference tool's own evidence-consuming code, then implement a 'graph is evidence, not an oracle' curveball requiring confidence/resolution-tiered evidence classification, with verification against a freshly rebuilt live demo merge.",
+    "outcome": "Implemented per-edge confidence/resolution tracking, runtime heuristic-type detection, CONFIRMED/HEURISTIC/UNVERIFIED evidence tiering with HIGH-risk capping, completeness surfacing, and a JSON/Markdown/YAML blind-spot disclosure, backed by 17 passing tests; after a live demo run initially regressed to MEDIUM, diagnosed and fixed a miscalibrated CONFIRMED rule (resolution=='exact' only) to also accept 'package' resolution, restoring HIGH + SERIALIZE_MERGE_ORDER matching the checkpoint baseline.",
+    "learnings": {
+      "repo": [
+        "entire graph edges records carry confidence, resolution, relation_scope, evidence, and warning_codes per edge — not just type/from_id/to_id — and this repo's DEPENDENCY_RELATIONS previously discarded all of that.",
+        "DEPENDENCY_RELATIONS included HANDLES_ROUTE, EMITS, LISTENS_ON, TESTS, all four of which capabilities reports as heuristic_relation_types — heuristic and parser-resolved edges were being mixed unweighted.",
+        "JSON, Markdown, and YAML are inventory-only in this graph (CONTAINS/DEFINES only) — coupling through shared config/docs is structurally invisible regardless of profile.",
+        "Real CALLS edges on this repo never reach confidence >= 1.0; even the best resolution tier ('exact') tops out at 0.92, so a literal 'confidence >= 1.0' CONFIRMED rule is unreachable in practice.",
+        "'exact' and 'package' CALLS resolutions both have reason text starting 'direct call expression resolved to...' (unambiguous AST match) and differ only in same-file vs same-package-cross-file scope; weaker resolutions (name_only, import_external, type_inferred, import_resolved, pattern) genuinely involve inference or external boundaries.",
+        "Both symbols and edges NDJSON streams end with a trailing summary record carrying completeness_level and partial_failures that was previously being skipped, not surfaced.",
+        "entire graph diff can return {\"files\": null} for a no-op diff (identical base/head), which previously crashed naive iteration via `for f in data.get('files', [])`."
+      ],
+      "code": [
+        {
+          "path": "interference/entire_graph_adapter.py",
+          "line": 52,
+          "end_line": 71,
+          "finding": "load_edges built a flat unweighted adjacency set() and overwrote etype on collision between multiple relation types for the same pair; rewritten to keep per-edge records (confidence, resolution, warning_codes, heuristic) with a _add_best_edge collision resolver."
+        },
+        {
+          "path": "interference/pr_interference.py",
+          "line": 93,
+          "end_line": 93,
+          "finding": "etype was captured from load_edges but never referenced again anywhere in analyze/pr_radius — dead wiring later repurposed as the plug point for evidence-tier classification."
+        },
+        {
+          "path": "interference/pr_interference.py",
+          "line": 107,
+          "end_line": 123,
+          "finding": "Risk ladder keyed only on contract/hops/dependents_count/low_precision; extended with a one-line cap: any non-CONFIRMED evidence_tier (or low_precision) demotes HIGH to MEDIUM, reusing the existing capping mechanism rather than duplicating it."
+        },
+        {
+          "path": "interference/pr_interference.py",
+          "line": 175,
+          "end_line": 180,
+          "finding": "main()'s --depth CLI default was documented in memory as 1 but code still defaulted to 3; this was corrected and re-verified earlier in the checkpoint history (commit 04103ce)."
+        }
+      ],
+      "workflow": [
+        "`entire checkpoint explain <id>` reconstructs prior project rationale (rejected approaches, verified facts, open risks) well enough to skip re-exploring code from scratch.",
+        "When a spec constant (e.g. 'confidence >= 1.0') proves empirically unreachable against real data, validate against a live/production data sample before trusting the literal spec — hermetic tests with hand-crafted fixtures can pass while masking a broken real-world threshold.",
+        "Use AskUserQuestion to resolve a spec-vs-reality conflict (numeric threshold unreachable) rather than silently picking an interpretation.",
+        "Rebuilding a stale fixture branch (demo-view) fresh from source branches, rather than trusting an existing possibly-outdated fixture, was necessary to get a trustworthy regression signal.",
+        "Stash/pop working-tree changes around branch-rebuild operations to run a clean live test without committing or risking merge conflicts with in-progress implementation edits."
+      ]
+    },
+    "friction": [
+      "User re-sent an already-completed analysis request verbatim; assistant had to recognize duplication and reuse prior results rather than blindly re-running.",
+      "Initial CONFIRMED-tier implementation used the literal spec threshold (confidence >= 1.0), which was unreachable for real CALLS edges, silently breaking the required regression case until caught by a live smoke test.",
+      "The demo-view fixture branch was stale (missing later pr-a/pr-b commits), forcing a full rebuild instead of reuse.",
+      "First live rebuild after the tier fix still failed the regression requirement (MEDIUM instead of HIGH) due to a second miscalibration (resolution=='exact' only, excluding 'package'), requiring a second diagnosis-and-fix cycle."
+    ],
+    "open_items": [
+      "No HTML report output implemented yet (noted as unresolved in original checkpoint, still not addressed in this session).",
+      "Databricks ingest still not wired up.",
+      "Hub-node explosion mitigation (capping propagation through high-fan-in nodes like SymbolRecord with 779 incoming edges) remains an open, unimplemented risk from the original checkpoint."
+    ]
+  },
   "initial_attribution": {
     "calculated_at": "2026-09-06T08:08:56.162009Z",
     "agent_lines": 662,
