@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.10.5",
+  "checkpoint_id": "3de1c936622a",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 5,
+  "files_touched": [
+    "interference/entire_graph_adapter.py",
+    "interference/pr_interference.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3d/e1c936622a/0/metadata.json",
+      "transcript": "/3d/e1c936622a/0/full.jsonl",
+      "compact_transcript": "/3d/e1c936622a/0/transcript.jsonl",
+      "content_hash": "/3d/e1c936622a/0/content_hash.txt",
+      "prompt": "/3d/e1c936622a/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 48,
+    "cache_creation_tokens": 55448,
+    "cache_read_tokens": 1669195,
+    "output_tokens": 27527,
+    "api_call_count": 24
+  }
+}
