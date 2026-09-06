@@ -172,7 +172,12 @@ def main():
     ap.add_argument("--base", required=True)
     ap.add_argument("--pr-a", required=True)
     ap.add_argument("--pr-b", required=True)
-    ap.add_argument("--depth", type=int, default=3)
+    # A hub type/symbol with a large fan-in (e.g. a struct used package-wide)
+    # spills the BFS into hundreds of unrelated nodes past 1 hop — see the
+    # 779-edge SymbolRecord case. Until propagation is capped per-node by
+    # fan-in, depth 1 is the only value that stays a precise signal instead
+    # of an almost-whole-graph one.
+    ap.add_argument("--depth", type=int, default=1)
     ap.add_argument("--out", default="interference_report.json")
     ap.add_argument("--debug-shapes", action="store_true")
     args = ap.parse_args()
