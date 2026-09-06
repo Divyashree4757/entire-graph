@@ -1,0 +1,16 @@
+Critical: verify each branch builds INDEPENDENTLY — that's the premise of the whole demo.
+
+git checkout pr-a && go build ./... && go vet ./internal/sem/
+git checkout pr-b && go build ./... && go vet ./internal/sem/
+
+If pr-a fails, it's because the signature change didn't update the existing callers
+on that branch. Fix it: update every existing caller of symbolFlowParameterNames on
+pr-a so pr-a compiles cleanly on its own. Do NOT touch flow_demo.go (that's pr-b's
+file and must not exist on pr-a).
+
+Then confirm the merged state actually breaks:
+git checkout entire-interference && git merge --no-commit --no-ff pr-a && git merge --no-commit pr-b
+go build ./...     # this SHOULD fail — that's the interference we predicted
+git merge --abort
+
+Report all three results.
