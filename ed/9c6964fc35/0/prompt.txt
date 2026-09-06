@@ -1,0 +1,32 @@
+Pre-noon stable state — Entire Interference (Track 2: Graph Intelligence).
+
+INTENT: Detect PRs that are individually correct and Git-mergeable but structurally
+incompatible through shared dependencies. Entire Graph is the structural source of truth.
+
+ARCHITECTURE: graph symbols + edges (NDJSON) -> BFS impact radius seeded from
+graph diff's semantically-changed entities -> intersect the two PRs' radii ->
+reconstruct evidence paths -> risk score -> merge recommendation.
+
+DECISIONS AND WHAT WE REJECTED:
+- Rejected textual/file overlap: it's what Git already does and it's what misses this bug class.
+- Rejected writing our own parser: the graph's 30 relation types are the authority.
+- Excluded DEFINES/CONTAINS from traversal: they link a file to every symbol in it,
+  which inflated every radius to file scope.
+
+EVIDENCE THAT CHANGED OUR APPROACH: first real run flagged 6,309 of 11,397 symbols
+— a tool that flags half the codebase is worse than useless. Added per-file triage
+(prefer symbol-level changes over module-level body_changed), a low_precision tag,
+budget-carrying BFS capping vague seeds at 1 hop, and a 50-symbol fan-out guard.
+HIGH-risk false alarms dropped 82%.
+
+VERIFIED: pr-a builds and vets clean alone. pr-b builds and vets clean alone. Git
+merges both with zero conflicts. The merged tree fails: "not enough arguments in
+call to symbolFlowParameterNames". Our tool flagged that symbol HIGH,
+contract_changed=true, low_precision=false, and recommended SERIALIZE_MERGE_ORDER
+before any build was run.
+
+OPEN RISK: hub-node explosion. SymbolRecord has 779 incoming type edges; at depth 3
+BFS spills through it into 1,609 overlaps, at depth 1 it's exactly 3. Default is now
+depth 1. Planned fix: cap propagation through high-fan-in nodes.
+
+UNRESOLVED: no test suite yet; no HTML report output; Databricks ingest not wired.
