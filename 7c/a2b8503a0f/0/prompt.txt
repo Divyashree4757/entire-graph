@@ -1,0 +1,120 @@
+Before we do any work: reconstruct this project from Entire Checkpoint context.
+
+Run `entire checkpoint list` and `entire checkpoint explain ed9c6964fc35`, then tell
+me back: what this project does, its architecture, which approaches we rejected and
+why, what is verified, and what open risks we recorded.
+
+Do not read or edit code until you've summarized the checkpoint context.
+
+---
+
+Before we change anything, run Entire Graph impact analysis on our own implementation.
+The curveball requires identifying which parts of our code consume relationship,
+impact, or semantic-diff evidence — and this analysis must happen before we edit.
+
+Run:
+  entire graph search --repo . --query "load_edges load_symbols semantic_diff evidence path risk" --format json
+  entire graph diff --base entire-interference --head HEAD --json
+  entire graph capabilities --json
+
+Then report:
+1. Every function in interference/ that consumes graph evidence (relations, impact,
+   or semantic diff), with file:line.
+2. For each, what would have to change if graph edges carried a confidence /
+   resolution / completeness dimension we currently ignore.
+3. What `capabilities` says about analysis completeness — unparsed languages,
+   coverage limits, anything indicating the graph may be partial for this repo.
+
+Do not edit any code yet. Analysis only.
+
+---
+
+Before we change anything, run Entire Graph impact analysis on our own implementation.
+The curveball requires identifying which parts of our code consume relationship,
+impact, or semantic-diff evidence — and this analysis must happen before we edit.
+
+Run:
+  entire graph search --repo . --query "load_edges load_symbols semantic_diff evidence path risk" --format json
+  entire graph diff --base entire-interference --head HEAD --json
+  entire graph capabilities --json
+
+Then report:
+1. Every function in interference/ that consumes graph evidence, with file:line.
+2. For each, what would change if graph edges carried a confidence / resolution /
+   completeness dimension we currently ignore.
+3. What `capabilities` says about analysis completeness — unparsed languages,
+   coverage limits, anything indicating the graph may be partial for this repo.
+
+Do not edit any code yet. Analysis only.
+
+---
+
+Implement the curveball response. Requirement: "Graph is evidence, not an oracle."
+
+THE ASSUMPTION IT INVALIDATED: we treated every graph edge as equally authoritative.
+The audit proved we already violate this — DEPENDENCY_RELATIONS includes four types
+that capabilities lists as heuristic_relation_types (HANDLES_ROUTE, EMITS, LISTENS_ON,
+TESTS), and load_edges discards the confidence/resolution/warning_codes every edge
+already carries. A 0.55-confidence git_history edge currently propagates exactly like
+a tree-sitter-resolved CALLS edge.
+
+Implement, preserving existing behaviour for fully-resolved code:
+
+1. load_edges: keep per-edge confidence, resolution, warning_codes. Replace the flat
+   adjacency set with per-edge records (fixing the etype collision-overwrite bug too).
+
+2. Read capabilities' heuristic_relation_types at runtime rather than hardcoding which
+   types are heuristic — the graph is the authority on that, not us.
+
+3. Classify every evidence path into a tier, propagating the WEAKEST link:
+   - CONFIRMED: every edge parser-resolved, confidence >= 1.0, no warning_codes
+   - HEURISTIC: any edge below that, or of a heuristic relation type
+   - UNVERIFIED: path depends on data the graph flagged incomplete
+
+4. A finding whose path is not CONFIRMED can never be HIGH — cap at MEDIUM. Reuse the
+   existing low_precision capping mechanism; do not duplicate it.
+
+5. Surface the completeness summary record that _stream currently skips: capture
+   completeness_level and partial_failures from both streams and report them.
+
+6. semantic_diff: detect W_ANALYSIS_BUDGET_EXCEEDED and any warnings field. A truncated
+   diff must be reported as partial, never treated as complete.
+
+7. Add to each overlap in the JSON: evidence_tier, weakest_edge (type, resolution,
+   confidence), and verification_hint — a concrete next step, e.g. "verify by reading
+   <file>:<line>" or "run tests covering <symbol>".
+
+8. CLI output: print the tier per finding, and a coverage header line showing
+   confirmed vs heuristic edge counts and completeness_level.
+
+9. Also report the known blind spot the audit found: JSON/Markdown/YAML are
+   inventory-only, so coupling through shared config is structurally invisible.
+   Say so in the report rather than implying full coverage.
+
+Then tests in interference/tests/:
+  - fully-resolved case: the pr-a/pr-b demo still yields HIGH + SERIALIZE_MERGE_ORDER,
+    byte-identical to today. This is the regression guard.
+  - heuristic-edge case: a finding reached via a heuristic relation is capped at
+    MEDIUM, tagged HEURISTIC, and carries a verification_hint.
+  - incomplete-analysis case: partial_failures > 0 or a budget-exceeded diff is
+    reported
+
+---
+
+The live demo has not been verified since the tier changes — demo-view was stale and
+you skipped it. Card requirement 4 (existing behaviour preserved) is proven by the real
+run, not by mocks. Rebuild it fresh and run it:
+
+git checkout entire-interference
+git branch -D demo-view demo-view2 2>/dev/null
+git checkout -b demo-live && git merge pr-a -m x && git merge pr-b -m x
+cd interference && python pr_interference.py --repo .. --base entire-interference --pr-a pr-a --pr-b pr-b
+
+Show me the COMPLETE output — coverage line, every overlap with its evidence_tier and
+verification_hint, and the recommendation.
+
+It must still be HIGH on symbolFlowParameterNames with SERIALIZE_MERGE_ORDER. If it is
+not, diagnose why: what tier did that finding get, what was its weakest_edge, and did
+the global `incomplete` flag downgrade it?
+
+Then: git checkout entire-interference && git branch -D demo-live

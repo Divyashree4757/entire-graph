@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.10.5",
+  "checkpoint_id": "7ca2b8503a0f",
+  "strategy": "manual-commit",
+  "branch": "entire-interference",
+  "checkpoints_count": 5,
+  "files_touched": [
+    "interference/entire_graph_adapter.py",
+    "interference/pr_interference.py",
+    "interference/tests/conftest.py",
+    "interference/tests/test_entire_graph_adapter.py",
+    "interference/tests/test_pr_interference.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/7c/a2b8503a0f/0/metadata.json",
+      "transcript": "/7c/a2b8503a0f/0/full.jsonl",
+      "compact_transcript": "/7c/a2b8503a0f/0/transcript.jsonl",
+      "content_hash": "/7c/a2b8503a0f/0/content_hash.txt",
+      "prompt": "/7c/a2b8503a0f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 108,
+    "cache_creation_tokens": 168244,
+    "cache_read_tokens": 8362565,
+    "output_tokens": 103811,
+    "api_call_count": 54
+  }
+}
