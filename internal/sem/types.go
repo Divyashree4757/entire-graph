@@ -2186,7 +2186,7 @@ func localCollectionVars(block string) map[string]bool {
 // An AST-confirmed empty parameter list is authoritative; only symbols without
 // AST parameter metadata (grammars exposing no parameter list, synthesized
 // entities) keep the signature-string fallback.
-func symbolFlowParameterNames(symbol SymbolRecord) map[string]bool {
+func symbolFlowParameterNames(symbol SymbolRecord, includeSelf bool) map[string]bool {
 	if !symbol.parameterNamesKnown {
 		return parameterNames(symbol.Signature)
 	}
