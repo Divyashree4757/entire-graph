@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.10.5",
+  "checkpoint_id": "3966e2e50b67",
+  "strategy": "manual-commit",
+  "branch": "pr-b",
+  "checkpoints_count": 5,
+  "files_touched": [
+    "internal/sem/flow_demo.go"
+  ],
+  "sessions": [
+    {
+      "metadata": "/39/66e2e50b67/0/metadata.json",
+      "transcript": "/39/66e2e50b67/0/full.jsonl",
+      "compact_transcript": "/39/66e2e50b67/0/transcript.jsonl",
+      "content_hash": "/39/66e2e50b67/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 1535,
+    "cache_read_tokens": 475753,
+    "output_tokens": 1007,
+    "api_call_count": 4
+  }
+}

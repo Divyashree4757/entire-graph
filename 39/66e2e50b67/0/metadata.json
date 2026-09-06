@@ -1,0 +1,40 @@
+{
+  "cli_version": "0.10.5",
+  "checkpoint_id": "3966e2e50b67",
+  "session_id": "2d0bb2b8-eb40-475a-9f2b-40f272c24fe5",
+  "strategy": "manual-commit",
+  "created_at": "2026-09-06T05:50:55.728373Z",
+  "branch": "pr-b",
+  "checkpoints_count": 5,
+  "files_touched": [
+    "internal/sem/flow_demo.go"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-5",
+  "turn_id": "c2476b8c3f81",
+  "checkpoint_transcript_start": 273,
+  "transcript_lines_at_start": 273,
+  "compact_transcript_start": 44,
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 1535,
+    "cache_read_tokens": 475753,
+    "output_tokens": 1007,
+    "api_call_count": 4
+  },
+  "session_metrics": {
+    "turn_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-09-06T05:50:55.712096Z",
+    "agent_lines": 8,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 8,
+    "total_lines_changed": 8,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
