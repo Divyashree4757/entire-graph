@@ -1,0 +1,160 @@
+{
+  "repo": "/Users/divyashrees/entire-graph",
+  "base": "entire-interference",
+  "pr_a": "pr-a",
+  "pr_b": "pr-b",
+  "depth": 1,
+  "graph_source": "entire-graph",
+  "graph_stats": {
+    "symbols": 11408,
+    "edges": 28372
+  },
+  "coverage": {
+    "completeness_level": "ok",
+    "graph_partial_failures": 0,
+    "diff_partial": false,
+    "confirmed_edges": 20308,
+    "heuristic_edges": 13959,
+    "blind_spots": [
+      "JSON, Markdown, and YAML are inventory-only in this graph (CONTAINS/DEFINES only, no dependency relations) \u2014 coupling introduced through shared config or docs is structurally invisible to this analysis."
+    ]
+  },
+  "semantic_changes": {
+    "pr_a": [
+      {
+        "path": "internal/sem/provider.go",
+        "language": "Go",
+        "status": "M",
+        "type": "body_changed",
+        "kind": "function",
+        "name": "resolveJuliaSameContainerMethodCallTargets",
+        "dependents_count": 2,
+        "contract_change": false
+      },
+      {
+        "path": "internal/sem/provider.go",
+        "language": "Go",
+        "status": "M",
+        "type": "body_changed",
+        "kind": "function",
+        "name": "forEachRelation",
+        "dependents_count": 3,
+        "contract_change": false
+      },
+      {
+        "path": "internal/sem/types.go",
+        "language": "Go",
+        "status": "M",
+        "type": "signature_changed",
+        "kind": "function",
+        "name": "symbolFlowParameterNames",
+        "dependents_count": 2,
+        "contract_change": true
+      }
+    ],
+    "pr_b": [
+      {
+        "path": "internal/sem/flow_demo.go",
+        "language": "Go",
+        "status": "A",
+        "type": "added",
+        "kind": "function",
+        "name": "summarizeFlowParameters",
+        "dependents_count": 0,
+        "contract_change": false
+      }
+    ]
+  },
+  "overlaps": [
+    {
+      "node": "gh/Divyashree4757/entire-graph:Go:internal/sem/flow_demo.go:function:summarizeFlowParameters",
+      "name": "summarizeFlowParameters",
+      "kind": "function",
+      "file": "internal/sem/flow_demo.go",
+      "risk": "HIGH",
+      "hops_from_pr_a": 1,
+      "hops_from_pr_b": 0,
+      "contract_changed": true,
+      "dependents_count": 2,
+      "low_precision": false,
+      "why_pr_a": "symbolFlowParameterNames signature_changed",
+      "why_pr_b": "summarizeFlowParameters added",
+      "evidence_path_from_pr_a": [
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/types.go:function:symbolFlowParameterNames",
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/flow_demo.go:function:summarizeFlowParameters"
+      ],
+      "evidence_path_from_pr_b": [
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/flow_demo.go:function:summarizeFlowParameters"
+      ],
+      "evidence_tier": "CONFIRMED",
+      "weakest_edge": {
+        "type": "CALLS",
+        "resolution": "package",
+        "confidence": 0.8
+      },
+      "verification_hint": "run tests covering summarizeFlowParameters"
+    },
+    {
+      "node": "gh/Divyashree4757/entire-graph:Go:internal/sem/types.go:function:symbolFlowParameterNames",
+      "name": "symbolFlowParameterNames",
+      "kind": "function",
+      "file": "internal/sem/types.go",
+      "risk": "HIGH",
+      "hops_from_pr_a": 0,
+      "hops_from_pr_b": 1,
+      "contract_changed": true,
+      "dependents_count": 2,
+      "low_precision": false,
+      "why_pr_a": "symbolFlowParameterNames signature_changed",
+      "why_pr_b": "summarizeFlowParameters added",
+      "evidence_path_from_pr_a": [
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/types.go:function:symbolFlowParameterNames"
+      ],
+      "evidence_path_from_pr_b": [
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/flow_demo.go:function:summarizeFlowParameters",
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/types.go:function:symbolFlowParameterNames"
+      ],
+      "evidence_tier": "CONFIRMED",
+      "weakest_edge": {
+        "type": "CALLS",
+        "resolution": "package",
+        "confidence": 0.8
+      },
+      "verification_hint": "run tests covering symbolFlowParameterNames"
+    },
+    {
+      "node": "gh/Divyashree4757/entire-graph:Go:internal/sem/provider.go:type:SymbolRecord",
+      "name": "SymbolRecord",
+      "kind": "type",
+      "file": "internal/sem/provider.go",
+      "risk": "MEDIUM",
+      "hops_from_pr_a": 1,
+      "hops_from_pr_b": 1,
+      "contract_changed": false,
+      "dependents_count": 2,
+      "low_precision": false,
+      "why_pr_a": "resolveJuliaSameContainerMethodCallTargets body_changed",
+      "why_pr_b": "summarizeFlowParameters added",
+      "evidence_path_from_pr_a": [
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/provider.go:function:resolveJuliaSameContainerMethodCallTargets",
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/provider.go:type:SymbolRecord"
+      ],
+      "evidence_path_from_pr_b": [
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/flow_demo.go:function:summarizeFlowParameters",
+        "gh/Divyashree4757/entire-graph:Go:internal/sem/provider.go:type:SymbolRecord"
+      ],
+      "evidence_tier": "HEURISTIC",
+      "weakest_edge": {
+        "type": "USES_TYPE",
+        "resolution": "name_only",
+        "confidence": 0.75
+      },
+      "verification_hint": "verify by reading internal/sem/provider.go:319"
+    }
+  ],
+  "recommendation": "SERIALIZE_MERGE_ORDER",
+  "suggested_merge_order": [
+    "pr-a",
+    "pr-b"
+  ]
+}
