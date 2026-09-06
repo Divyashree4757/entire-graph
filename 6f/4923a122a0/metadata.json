@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.10.5",
+  "checkpoint_id": "6f4923a122a0",
+  "strategy": "manual-commit",
+  "branch": "interference-break-check",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "internal/sem/provider.go",
+    "internal/sem/types.go"
+  ],
+  "sessions": [
+    {
+      "metadata": "/6f/4923a122a0/0/metadata.json",
+      "transcript": "/6f/4923a122a0/0/full.jsonl",
+      "compact_transcript": "/6f/4923a122a0/0/transcript.jsonl",
+      "content_hash": "/6f/4923a122a0/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 12,
+    "cache_creation_tokens": 3701,
+    "cache_read_tokens": 869651,
+    "output_tokens": 2917,
+    "api_call_count": 6
+  }
+}
